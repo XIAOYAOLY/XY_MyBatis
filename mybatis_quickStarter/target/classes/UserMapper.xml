@@ -21,7 +21,7 @@
     <!--添加用户-->
     <!--parameterType：参数类型-->
     <insert id="saveUser" parameterType="user" >
-        insert into user values(#{id},#{username})
+        insert into user (id,username) values(#{id},#{username})
     </insert>
 
     <!--修改-->

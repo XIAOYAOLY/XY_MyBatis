@@ -17,5 +17,13 @@ public interface IUserDao {
     //多值查询：演示foreach
     public List<User> findByIds(int[] ids);
 
+    //Add
+    public void saveUser(User user);
+
+    //Modify
+    public void updateUser(User user);
+
+    //Delete
+    public Integer deleteUser(int id);
 
 }

@@ -41,6 +41,30 @@ public class IPersistenceTest {
             System.out.println(user1);
         }
 
+        User insertUser = new User();
+        insertUser.setId(4);
+        insertUser.setUsername("tom");
+        System.out.println("新增开始！");
+        userDao.saveUser(insertUser);
+        System.out.println("新增结束！");
+
+        User updateUser = new User();
+        updateUser.setId(2);
+        updateUser.setUsername("Mary");
+        System.out.println("修改开始！");
+        userDao.updateUser(updateUser);
+        System.out.println("修改结束！");
+
+        int count = userDao.deleteUser(6);
+        if(count>0){
+            System.out.println("删除成功！");
+        }
+
+        List<User> allUserInfos = userDao.findAll();
+        for (User user1 : allUserInfos) {
+            System.out.println(user1);
+        }
+
     }
 
 

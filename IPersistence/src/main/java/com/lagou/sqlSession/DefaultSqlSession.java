@@ -38,6 +38,15 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
+    public void save(String statementid, Object... params) throws Exception {
+        //将要去完成对simpleExecutor里的query方法的调用
+        simpleExecutor simpleExecutor = new simpleExecutor();
+        MappedStatement mappedStatement = configuration.getMappedStatementMap().get(statementid);
+        simpleExecutor.save(configuration, mappedStatement, params);
+
+    }
+
+    @Override
     public <T> T getMapper(Class<?> mapperClass) {
         // 使用JDK动态代理来为Dao接口生成代理对象，并返回
 
@@ -59,9 +68,15 @@ public class DefaultSqlSession implements SqlSession {
                 if(genericReturnType instanceof ParameterizedType){
                     List<Object> objects = selectList(statementId, args);
                     return objects;
+                }else if ("void".equals(String.valueOf(genericReturnType))){
+                    save(statementId,args);
+                    return null;
+                }else if ("int".equals(String.valueOf(genericReturnType))){
+                    save(statementId,args);
+                    return 1;
                 }
 
-                return selectOne(statementId,args);
+                return selectOne(statementId, args);
 
             }
         });

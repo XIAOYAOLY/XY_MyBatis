@@ -33,33 +33,35 @@ public class MybatisTest {
     }
 
 
+    // getMapper实现新增
     @Test
     public void test2() throws IOException {
         InputStream resourceAsStream = Resources.getResourceAsStream("sqlMapConfig.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
         SqlSession sqlSession = sqlSessionFactory.openSession(true);//事务自动提交
+        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
 
         User user = new User();
         user.setId(6);
         user.setUsername("tom");
-        sqlSession.insert("user.saveUser",user);
-
+        mapper.saveUser(user);
 
         sqlSession.close();
     }
 
+    // getMapper实现修改
     @Test
     public void test3() throws IOException {
         InputStream resourceAsStream = Resources.getResourceAsStream("sqlMapConfig.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
         SqlSession sqlSession = sqlSessionFactory.openSession();
+        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
 
         User user = new User();
-        user.setId(4);
-        user.setUsername("lucy");
-        sqlSession.update("user.updateUser",user);
+        user.setId(2);
+        user.setUsername("Mary");
+        mapper.updateUser(user);
         sqlSession.commit();
-
         sqlSession.close();
     }
 
@@ -68,9 +70,11 @@ public class MybatisTest {
         InputStream resourceAsStream = Resources.getResourceAsStream("sqlMapConfig.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
         SqlSession sqlSession = sqlSessionFactory.openSession();
-
-
-        sqlSession.delete("com.lagou.dao.IUserDao.deleteUser",6);
+        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
+        Integer count = mapper.deleteUser(6);
+        if(count>0){
+            System.out.print("删除成功！");
+        }
         sqlSession.commit();
 
         sqlSession.close();

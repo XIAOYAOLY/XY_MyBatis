@@ -12,6 +12,9 @@ public interface SqlSession {
     //T某一个实体类型
     public <T> T selectOne(String statementid,Object... params) throws Exception;
 
+    //保存
+    public void save(String statementid,Object... params) throws Exception;
+
 
     //为Dao接口生成代理实现类
     public <T> T getMapper(Class<?> mapperClass);
