@@ -54,7 +54,6 @@ public class simpleExecutor implements  Executor {
 
         }
 
-
         // 5. 执行sql
         ResultSet resultSet = preparedStatement.executeQuery();
         String resultType = mappedStatement.getResultType();
@@ -85,6 +84,53 @@ public class simpleExecutor implements  Executor {
 
         }
             return (List<E>) objects;
+
+    }
+
+    @Override
+    public void save(Configuration configuration, MappedStatement mappedStatement, Object... params) throws Exception {
+        // 1. 注册驱动，获取连接
+        Connection connection = configuration.getDataSource().getConnection();
+
+        // 2. 获取插入sql语句 : insert into user (id,username) values(#{id},#{username})
+        //转换sql语句： insert into user (id,username) values(?,?)，转换的过程中，还需要对#{}里面的值进行解析存储
+        String sql = mappedStatement.getSql();
+        BoundSql boundSql = getBoundSql(sql);
+
+        // 3.获取预处理对象：preparedStatement
+        PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSqlText());
+
+        // 4. 设置参数
+        //获取到了参数的全路径
+        String paramterType = mappedStatement.getParamterType();
+        Class<?> paramtertypeClass = null;
+        if(!"int".equals(paramterType)) {
+            paramtertypeClass = getClassType(paramterType);
+        }
+
+        List<ParameterMapping> parameterMappingList = boundSql.getParameterMappingList();
+        for (int i = 0; i < parameterMappingList.size(); i++) {
+            ParameterMapping parameterMapping = parameterMappingList.get(i);
+            String content = parameterMapping.getContent();
+
+            if(!"int".equals(paramterType)) {
+                //反射
+                Field declaredField = paramtertypeClass.getDeclaredField(content);
+
+                //暴力访问
+                declaredField.setAccessible(true);
+                Object o = declaredField.get(params[0]);
+
+                preparedStatement.setObject(i + 1, o);
+            }else{
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+
+        }
+
+        // 5. 执行sql
+        preparedStatement.execute();
+
 
     }
 
